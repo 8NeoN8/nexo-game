@@ -12,7 +12,7 @@ let canvasHeight = 250
 let scorePoints = 0
 let velocityX = -6
 let velocityY = 0
-let gravity = 0.4
+let gravity = 0.35
 let gameOver = false
 let isGameOn = false
 let score = 0
@@ -70,6 +70,7 @@ if (window.matchMedia('screen and (min-width: 431px)').matches) {
 if (window.matchMedia('screen and (min-width: 520px)').matches) {
   canvasWidth = 550
   velocityX = -12
+  gravity = 0.4
 
   setCanvasDimensions()
 }
