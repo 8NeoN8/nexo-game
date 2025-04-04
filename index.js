@@ -10,9 +10,9 @@ let canvasHeight = 250
 
 //*Game variables
 let scorePoints = 0
-let velocityX = -6
+let velocityX = -5.3
 let velocityY = 0
-let gravity = 0.35
+let gravity = 0.33
 let gameOver = false
 let isGameOn = false
 let score = 0
@@ -58,18 +58,18 @@ setCanvasDimensions()
 if (window.matchMedia('screen and (min-width: 413px)').matches) {
   canvasWidth = 420
   setCanvasDimensions()
-  velocityX = -8
+  velocityX = -6
 }
 
 if (window.matchMedia('screen and (min-width: 431px)').matches) {
   canvasWidth = 450
   setCanvasDimensions()
-  velocityX = -10
+  velocityX = -8
 }
 
 if (window.matchMedia('screen and (min-width: 520px)').matches) {
   canvasWidth = 550
-  velocityX = -12
+  velocityX = -10
   gravity = 0.4
 
   setCanvasDimensions()
@@ -78,7 +78,7 @@ if (window.matchMedia('screen and (min-width: 520px)').matches) {
 if (window.matchMedia('screen and (min-width: 760px)').matches) {
   canvasWidth = 750
   setCanvasDimensions()
-  velocityX = -15
+  velocityX = -12
 }
 
 //*Obstacles
@@ -96,6 +96,15 @@ obstacleSingleImg.src = './images/obstacle_pixel_single.png'
 obstacleDoubleImg.src = './images/obstacle_pixel_double.png'
 obstacleTripleImg.src = './images/obstacle_pixel_triple.png'
 
+//*Clouds
+let cloudArray = []
+let cloudVelocityX = -4
+let cloudX = canvasWidth
+let cloudHeight = 50
+let cloudWidth = 80
+let cloudImg = new Image()
+cloudImg.src = './images/logo_nexo.png'
+
 //* DATA VARIABLES
 
 
@@ -111,7 +120,11 @@ window.addEventListener('keydown', (e) => {
 
     setInterval(() => {
       drawObstacle()
-    }, 1200);
+    }, 1350);
+
+    setInterval(() => {
+      drawCloud() 
+    }, 1000);
 
   }
 
@@ -123,7 +136,7 @@ window.addEventListener('keydown', (e) => {
     movePlayer(e)
   }
 })
-window.addEventListener('click', (e) => {
+window.addEventListener('pointerdown', (e) => {
   if(isGameOn && !gameOver) movePlayer(e)
   if(gameOver){
     restartGame()
@@ -136,14 +149,19 @@ window.addEventListener('click', (e) => {
 
     setInterval(() => {
       drawObstacle()
-    }, 1200);
+    }, 1350);
+
+    setInterval(() => {
+      drawCloud() 
+    }, 1000);
   }
 })
 
-context.fillStyle = 'whitesmoke'
+
+context.fillStyle = 'rgb(65,65,65)'
 context.fillRect(0,0, canvasWidth,canvasHeight)
-context.fillStyle = 'green'
-context.font = "34px serif";
+context.fillStyle = 'limegreen'
+context.font = "34px arial";
 context.fillText('Click to start', 10, 50);
 viru.images.standing.onload = function(){
   context.drawImage(viru.images.standing, viru.x, viru.y, viru.width, viru.height)
@@ -163,11 +181,17 @@ function gameUpdate(){
     let obstacle = obstacleArray[i]
     
     obstacle.x += velocityX
-    context.drawImage(obstacle.img,obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+    context.drawImage(obstacle.img, obstacle.x, obstacle.y, obstacle.width, obstacle.height)
     
     if(detectCollition(viru, obstacle)){
       setGameOver()
     }
+  }
+
+  for (let i = 0; i < cloudArray.length; i++) {
+    let cloud = cloudArray[i]
+    cloud.x += cloudVelocityX
+    context.drawImage(cloudImg, cloud.x, cloud.y, cloud.width, cloud.height)
   }
   
   if(gameOver) return
@@ -180,7 +204,7 @@ function clearCanvas(){
 }
 
 function drawGame(){
-  context.fillStyle = 'whitesmoke'
+  context.fillStyle = 'rgb(65,65,65)'
   context.fillRect(0,0, canvasWidth,canvasHeight)
 }
 
@@ -254,6 +278,23 @@ function drawObstacle(){
   if(obstacleArray.length > 5) obstacleArray.shift()
 }
 
+function drawCloud(){
+  
+  let cloud = {
+    img: cloudImg,
+    x: cloudX,
+    y: getCloudHeight(),
+    width: cloudImg,
+    height: cloudHeight,
+  }
+  
+
+  cloudArray.push(cloud)
+  
+
+  if(cloudArray.length > 4) cloudArray.shift()
+}
+
 function drawScore(){
   frameCount++
   if(frameCount % 2 == 0){
@@ -261,7 +302,7 @@ function drawScore(){
   }
 
   context.fillStyle = 'limegreen'
-  context.font = "28px serif";
+  context.font = "28px arial";
   context.fillText(score, 20, 40);
 }
 
@@ -276,11 +317,11 @@ function setGameOver(){
     gameOver = true
     isGameOn = false
     context.fillStyle = 'red'
-    context.font = "34px serif";
+    context.font = "34px arial";
     context.fillText('Game Over', 10, 50);
-    context.font = "24px serif";
+    context.font = "24px arial";
     context.fillText(`Score: ${score}`, 10, 75);
-    context.font = "16px serif";
+    context.font = "16px arial";
     context.fillText('click to restart', 10, 90);
 }
 
@@ -298,6 +339,19 @@ function setCanvasDimensions(){
   canvas.setAttribute('height',`${canvasHeight}px`)
   canvas.setAttribute('width',`${canvasWidth}px`)
   floor.setAttribute('width',`${canvasWidth}px`)
+}
+
+function getCloudHeight(){
+  let ran = Math.random()
+  let cloudHeight = 0
+  if(ran < 0.3) cloudHeight = 135
+  if(ran > 0.3 < 0.5) cloudHeight = 78
+  if(ran > 0.5 < 0.6) cloudHeight = 120
+  if(ran > 0.6 < 0.7) cloudHeight = 117
+  if(ran > 0.7 < 0.8) cloudHeight = 92
+  if(ran > 0.8 < 0.9) cloudHeight = 43
+
+  return cloudHeight
 }
 
 //*Functions
