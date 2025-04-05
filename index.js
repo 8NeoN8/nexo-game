@@ -1,5 +1,14 @@
 //* DATA VARIABLES
 
+//*Page Colors
+
+let dark_bg = 'rgb(65,65,65)'
+let light_bg = 'whitesmoke'
+let dark_text = 'limegreen'
+let light_text = 'rgb(65,65,65)'
+let page_bg = light_bg
+let page_text = light_text
+
 //*Canvas
 const canvas = document.getElementById('game-canvas')
 const context = canvas.getContext('2d')
@@ -53,6 +62,12 @@ let viru = {
 }
 
 //*Pregame setup
+
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  page_bg = dark_bg
+  page_text = dark_text
+}
+
 floor.setAttribute('height','50px')
 setCanvasDimensions()
 if (window.matchMedia('screen and (min-width: 413px)').matches) {
@@ -98,7 +113,7 @@ obstacleTripleImg.src = './images/obstacle_pixel_triple.png'
 
 //*Clouds
 let cloudArray = []
-let cloudVelocityX = -4
+let cloudVelocityX = -3.5
 let cloudX = canvasWidth
 let cloudHeight = 50
 let cloudWidth = 80
@@ -158,9 +173,9 @@ window.addEventListener('pointerdown', (e) => {
 })
 
 
-context.fillStyle = 'rgb(65,65,65)'
+context.fillStyle = page_bg
 context.fillRect(0,0, canvasWidth,canvasHeight)
-context.fillStyle = 'limegreen'
+context.fillStyle = page_text
 context.font = "34px arial";
 context.fillText('Click to start', 10, 50);
 viru.images.standing.onload = function(){
@@ -174,6 +189,14 @@ function gameUpdate(){
   drawGame()
   velocityY += gravity
   viru.y = Math.min(viru.y + velocityY, canvasHeight - viru.height)
+
+
+  for (let i = 0; i < cloudArray.length; i++) {
+    let cloud = cloudArray[i]
+    cloud.x += cloudVelocityX
+    context.drawImage(cloudImg, cloud.x, cloud.y, cloud.width, cloud.height)
+  }
+
   drawViru()
   
   for (let i = 0; i < obstacleArray.length; i++) {
@@ -187,12 +210,6 @@ function gameUpdate(){
       setGameOver()
     }
   }
-
-  for (let i = 0; i < cloudArray.length; i++) {
-    let cloud = cloudArray[i]
-    cloud.x += cloudVelocityX
-    context.drawImage(cloudImg, cloud.x, cloud.y, cloud.width, cloud.height)
-  }
   
   if(gameOver) return
   drawScore()
@@ -204,7 +221,7 @@ function clearCanvas(){
 }
 
 function drawGame(){
-  context.fillStyle = 'rgb(65,65,65)'
+  context.fillStyle = page_bg
   context.fillRect(0,0, canvasWidth,canvasHeight)
 }
 
@@ -284,7 +301,7 @@ function drawCloud(){
     img: cloudImg,
     x: cloudX,
     y: getCloudHeight(),
-    width: cloudImg,
+    width: cloudWidth,
     height: cloudHeight,
   }
   
@@ -301,7 +318,7 @@ function drawScore(){
     score++
   }
 
-  context.fillStyle = 'limegreen'
+  context.fillStyle = page_text
   context.font = "28px arial";
   context.fillText(score, 20, 40);
 }
@@ -344,12 +361,12 @@ function setCanvasDimensions(){
 function getCloudHeight(){
   let ran = Math.random()
   let cloudHeight = 0
-  if(ran < 0.3) cloudHeight = 135
-  if(ran > 0.3 < 0.5) cloudHeight = 78
-  if(ran > 0.5 < 0.6) cloudHeight = 120
-  if(ran > 0.6 < 0.7) cloudHeight = 117
-  if(ran > 0.7 < 0.8) cloudHeight = 92
-  if(ran > 0.8 < 0.9) cloudHeight = 43
+  ran = ran.toFixed(2)
+  console.log(ran);
+  if(ran > 0 && ran < 0.2) cloudHeight = 150
+  if(ran > 0.2 && ran < 0.4) cloudHeight = 70 
+  if(ran > 0.4 && ran < 0.6) cloudHeight = 50
+  if(ran > 0.6 && ran < 0.8) cloudHeight = 135
 
   return cloudHeight
 }
